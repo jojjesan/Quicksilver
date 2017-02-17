@@ -429,14 +429,14 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             {
                 _mailService.Send(confirmationEmail, queryCollection, emailAddress, language);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // The purchase has been processed and the payment was successfully settled, but for some reason the e-mail
                 // receipt could not be sent to the customer. Rollback is not possible so simple make sure to inform the
                 // customer to print the confirmation page instead.
                 queryCollection.Add("notificationMessage", string.Format(_localizationService.GetString("/OrderConfirmationMail/ErrorMessages/SmtpFailure"), emailAddress));
 
-                // Todo: Log the error and raise an alert so that an administrator can look in to it.
+                log4net.LogManager.GetLogger("EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers.CheckoutController").Error($"SMTP failed: {ex.Message}\r\n{ex.StackTrace}");
             }
         }
 
