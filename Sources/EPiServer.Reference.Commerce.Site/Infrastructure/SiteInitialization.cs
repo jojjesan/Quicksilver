@@ -1,4 +1,3 @@
-using EPiServer.Commerce.Order;
 using EPiServer.Commerce.Routing;
 using EPiServer.Editor;
 using EPiServer.Framework;
@@ -10,7 +9,6 @@ using EPiServer.Recommendations.Widgets;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
 using EPiServer.Reference.Commerce.Site.Features.Recommendations.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Attributes;
-using EPiServer.Reference.Commerce.Site.Infrastructure.Business;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using EPiServer.Reference.Commerce.Site.Infrastructure.WebApi;
 using EPiServer.ServiceLocation;
@@ -79,19 +77,17 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
                         locator.GetInstance<CookieService>(),
                         defaultImplementation));
 
-            services.AddTransient<IOrderGroupCalculator, SiteOrderGroupCalculator>();
-            services.AddTransient<IOrderFormCalculator, SiteOrderFormCalculator>();
             services.AddTransient<IModelBinderProvider, ModelBinderProvider>();
             services.AddHttpContextOrThreadScoped<SiteContext, CustomCurrencySiteContext>();
             services.AddTransient<HttpContextBase>(locator => HttpContext.Current.ContextBaseOrNull());
 
-            DependencyResolver.SetResolver(new StructureMapDependencyResolver(context.Container));
+            DependencyResolver.SetResolver(new StructureMapDependencyResolver(context.StructureMap()));
             GlobalConfiguration.Configure(config =>
             {
                 config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.LocalOnly;
                 config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings();
                 config.Formatters.XmlFormatter.UseXmlSerializer = true;
-                config.DependencyResolver = new StructureMapResolver(context.Container);
+                config.DependencyResolver = new StructureMapResolver(context.StructureMap());
                 config.MapHttpAttributeRoutes();
             });
 
